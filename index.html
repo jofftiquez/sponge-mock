@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #app {
+      background-color: #26B9C8;
+    }
+
+    #app-bar-title {
+      color: #000;
+    }
+
+    #output-background {
+      height: 500px;
+      background-image: url('./spongebob.jpg');
+      background-position: center center;
+      background-size: cover;
+      padding-top: 100px;
+    }
+
+    #output-text {
+      color: black;
+      font-size: 80px;
+      font-weight: 800;
+      line-height: 1;
+      -webkit-text-stroke-width: 3px;
+      -webkit-text-stroke-color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <!DOCTYPE html>
+  <html>
+
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  </head>
+
+  <body>
+    <div id="app">
+      <v-app>
+        <v-app-bar class="elevation-1" color="#FFF56C" app>
+          <h2 id="app-bar-title">Sponge Bob Mocking Text Generator</h2>
+        </v-app-bar>
+        <v-content>
+          <v-container>
+            <v-row justify="center">
+              <v-col cols="12" sm="12" md="10">
+                <v-card>
+                  <v-card-text>
+                    <v-textarea
+                      v-model="input"
+                      :label="label"
+                      solo
+                      hide-details
+                      auto-grow
+                      rows="2"
+                    />
+                  </v-card-text>
+                  <v-card-text>
+                    <v-btn large block color="#0457A0" dark>{{buttonText}}</v-btn>
+                  </v-card-text>
+                  <v-card-text>
+                    <div id="output-background">
+                      <p id="output-text" align="center">{{output}}</p>
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-content>
+      </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script>
+      new Vue({
+        el: '#app',
+        vuetify: new Vuetify(),
+        data () {
+          return {
+            input: ''
+          };
+        },
+        computed: {
+          label () {
+            return this.mockery(`Type what's on your mind here...`);
+          },
+          buttonText () {
+            return this.mockery(`Copy Text`);
+          },
+          output () {
+            return this.mockery(this.input);
+          }
+        },
+        methods: {
+          mockery (text) {
+            return text.split('').map(x => Math.floor(Math.random() * Math.floor(2)) ? x.toUpperCase() : x.toLowerCase()).join('');
+          }
+        }
+      });
+    </script>
+  </body>
+
+  </html>
+
+</body>
+
+</html>
