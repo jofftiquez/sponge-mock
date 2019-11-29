@@ -20,7 +20,7 @@
       background-image: url('./spongebob.jpg');
       background-position: center center;
       background-size: cover;
-      padding-top: 100px;
+      padding-top: 40px;
     }
 
     #output-text {
@@ -32,18 +32,12 @@
       -webkit-text-stroke-color: white;
     }
   </style>
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
-
-<body>
-  <!DOCTYPE html>
-  <html>
-
-  <head>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-  </head>
 
   <body>
     <div id="app">
@@ -57,19 +51,44 @@
               <v-col cols="12" sm="12" md="10">
                 <v-card>
                   <v-card-text>
-                    <v-textarea
-                      v-model="input"
-                      :label="label"
-                      solo
-                      hide-details
-                      auto-grow
-                      rows="2"
-                    />
-                  </v-card-text>
-                  <v-card-text>
-                    <v-btn large block color="#0457A0" dark>{{buttonText}}</v-btn>
-                  </v-card-text>
-                  <v-card-text>
+                    <v-row>
+                      <v-col cols="12" sm="12">
+                        <v-textarea
+                          v-model="input"
+                          :label="label"
+                          solo
+                          hide-details
+                          auto-grow
+                          rows="2"
+                          clearable
+                        />
+                      </v-col>
+                      <v-col sm="6">
+                        <v-btn 
+                          color="#0457A0" 
+                          large 
+                          block 
+                          v-clipboard:copy="output"
+                          v-clipboard:success="onCopy"
+                          v-clipboard:error="onError"
+                          :disabled="!output"
+                          class="white--text"
+                        >
+                          {{buttonText}}
+                        </v-btn>
+                      </v-col>
+                      <v-col sm="6">
+                        <v-btn
+                          color="#FFF56C"
+                          large 
+                          block 
+                          :disabled="!output"
+                          @click="downloadImage"
+                        >
+                          Download Image
+                        </v-btn>
+                      </v-col>
+                    </v-row>
                     <div id="output-background">
                       <p id="output-text" align="center">{{output}}</p>
                     </div>
@@ -79,18 +98,31 @@
             </v-row>
           </v-container>
         </v-content>
+        <v-snackbar 
+          v-model="successCopy"
+          :timeout="3000"
+          bottom
+          center
+        >
+          {{mockery('Text copied to clipboard!')}}
+          <v-icon class="success--text">mdi-check</v-icon>
+        </v-snackbar>
       </v-app>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="./lib/vue-clipboard2.min.js"></script>
+    <script src="./lib/dom-to-image.min.js"></script>
     <script>
-      new Vue({
+      Vue.use(VueClipboard);
+      var vm = new Vue({
         el: '#app',
         vuetify: new Vuetify(),
         data () {
           return {
-            input: ''
+            input: '',
+            successCopy: false
           };
         },
         computed: {
@@ -106,7 +138,22 @@
         },
         methods: {
           mockery (text) {
+            if (!text) return;
             return text.split('').map(x => Math.floor(Math.random() * Math.floor(2)) ? x.toUpperCase() : x.toLowerCase()).join('');
+          },
+          onCopy (e) {
+            this.successCopy = true;
+          },
+          onError () {},
+          downloadImage () {
+            var el = document.getElementById('output-background');
+            domtoimage.toPng(el, { quality: 10000 })
+              .then(function (dataUrl) {
+                var link = document.createElement('a');
+                link.download = `${vm.output}.png`;
+                link.href = dataUrl;
+                link.click();
+              });
           }
         }
       });
